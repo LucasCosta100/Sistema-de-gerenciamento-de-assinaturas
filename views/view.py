@@ -32,7 +32,7 @@ class SubscriptionService:
             results = session.exec(statement).all()                                                           #join serve para fazer uma intersecção entre duas tabelas
             
             if self._has_pay(results):
-                question = input("Essa conta já foi paga esse mês, deseja pagar novamente? Y ou N")
+                question = input("Essa conta já foi paga esse mês, deseja pagar novamente? Y ou N ")
                 
                 if not question.upper() == 'Y': #Upper serve para deixar as letras em maiusculo
                     return
@@ -40,14 +40,29 @@ class SubscriptionService:
             pay = Payments(subscription_id=subscription.id, date=date.today())
             session.add(pay)
             session.commit()
-                
+    
+    def total_value(self):
+        with Session(self.engine) as session:  
+            statement = select(Subscription)
+            results = session.exec(statement).all()
+            
+        total = 0
+        for result in results:
+            total+= result.valor
+        
+        return float(total)     
         
 ss = SubscriptionService(engine)
 
+print(ss.total_value())
+
+
+'''
 assinaturas = ss.list_all()
-for i, s in enumerate(assinaturas):
+for i, s in enumerate(assinaturas): #enumerate serve para usar uma variavel, no exemplo, i sem alterar o valor da varieavel s, como mostrado no exemplo
     print(f"[{i}] -> {s.empresa}")
     
 x = int(input())
 
 ss.pay(assinaturas[x])
+'''

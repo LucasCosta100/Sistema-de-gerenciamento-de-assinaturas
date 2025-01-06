@@ -20,23 +20,34 @@ class SubscriptionService:
             results = session.exec(statement).all()
         return results
     
-    def _has_pay(seld, result):
+    def _has_pay(self, results): #Por padrão quando for uma função privada se inicia com um underline
         for result in results:
-            if result.date.month == date.today(). month:#Por padrão quando for uma função privada se inicia com um underline
+            if result.date.month == date.today(). month:
                 return True
         return False
     
     def pay(self, subscription: Subscription):
         with Session(self.engine) as session:
-            statement = select(Payments).where(Subscription.empresa==subscription.empresa)#where é uma clausula de condição
-            results = session.exec(statement).all()
-            pago = False
-            for result in results:
-                if result.date.month == date.today().month:
-                    pago = True
-            if pago:
-                question = input("Essa conta jjá foi paga esse mês, deseja pagar novamente? Y ou N")
+            statement = select(Payments).join(Subscription).where(Subscription.empresa==subscription.empresa) #where é uma clausula de condição 
+            results = session.exec(statement).all()                                                           #join serve para fazer uma intersecção entre duas tabelas
+            
+            if self._has_pay(results):
+                question = input("Essa conta já foi paga esse mês, deseja pagar novamente? Y ou N")
+                
+                if not question.upper() == 'Y': #Upper serve para deixar as letras em maiusculo
+                    return
+                
+            pay = Payments(subscription_id=subscription.id, date=date.today())
+            session.add(pay)
+            session.commit()
+                
         
 ss = SubscriptionService(engine)
-subscription = Subscription(empresa="Netflix", site="netflix.com.br", data_assinatura=date.today(), valor=25)
-ss.pay(subscription)
+
+assinaturas = ss.list_all()
+for i, s in enumerate(assinaturas):
+    print(f"[{i}] -> {s.empresa}")
+    
+x = int(input())
+
+ss.pay(assinaturas[x])

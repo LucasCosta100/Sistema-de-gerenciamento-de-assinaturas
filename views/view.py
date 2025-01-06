@@ -59,8 +59,49 @@ class SubscriptionService:
         
         return float(total)
     
+    def  _get_last_12_months_native(self):
+        today = datetime.now()
+        year= today.year
+        month = today.month
+        last_12_month = []
+        for _ in range (12): #Não a necessidade de uma variavel aqui entao se usa o _ como padrão
+            last_12_month.append((month, year))
+            month -= 1
+            if month == 0:
+                month = 12
+                year -=1
+        
+        return last_12_month[::-1] #Se usa o [::-1] para mostrar o valor da antiga para a mais nova
+
+    def _get_values_for_months(self, last_12_months):
+        with Session(self.engine) as session:
+            statement = select(Payments)
+            results = session.exec(statement).all()
+            
+            value_for_months = []
+            for i in last_12_months:
+                value = 0
+                for result in results:
+                    if result.date.month == i[0] and result.date.year == i[1]:
+                        value += float(result.subscription.valor)
+                value_for_months.append(value)
+            return value_for_months
+    
+    def gen_chart(self):
+        last_12_months = self._get_last_12_months_native()
+        values_for_months = self._get_values_for_months(last_12_months)
+        
+        last_12_months2 = []
+        for i in last_12_months:
+            last_12_months2.append(i[0])
+          
+        import matplotlib.pyplot as plt
+        
+        plt.plot(last_12_months2, values_for_months)
+        plt.show()
                 
 ss = SubscriptionService(engine)
+print(ss.gen_chart())
 
 
 ''' Exemplo de uso do enumerate:
@@ -72,3 +113,4 @@ x = int(input())
 
 ss.pay(assinaturas[x])
 '''
+

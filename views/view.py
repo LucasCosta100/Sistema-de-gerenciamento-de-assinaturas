@@ -2,7 +2,7 @@ import __init__
 from models.model import Subscription, Payments
 from models.database import engine
 from sqlmodel import Session, select
-from datetime import date
+from datetime import date, datetime
 
 class SubscriptionService:
     def __init__(self, engine):
@@ -19,6 +19,13 @@ class SubscriptionService:
             statement = select(Subscription)
             results = session.exec(statement).all()
         return results
+    
+    def delete(self, id):
+        with Session(self.engine) as session:
+            statement = select(Subscription).where(Subscription.id == id) #Não a necessidade do join, pois esta consultando apenas uma tabela
+            result = session.exec(statement).one()
+            session.delete(result)
+            session.commit()
     
     def _has_pay(self, results): #Por padrão quando for uma função privada se inicia com um underline
         for result in results:
@@ -50,14 +57,13 @@ class SubscriptionService:
         for result in results:
             total+= result.valor
         
-        return float(total)     
-        
+        return float(total)
+    
+                
 ss = SubscriptionService(engine)
 
-print(ss.total_value())
 
-
-'''
+''' Exemplo de uso do enumerate:
 assinaturas = ss.list_all()
 for i, s in enumerate(assinaturas): #enumerate serve para usar uma variavel, no exemplo, i sem alterar o valor da varieavel s, como mostrado no exemplo
     print(f"[{i}] -> {s.empresa}")

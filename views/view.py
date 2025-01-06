@@ -101,7 +101,6 @@ class SubscriptionService:
         plt.show()
                 
 ss = SubscriptionService(engine)
-print(ss.gen_chart())
 
 
 ''' Exemplo de uso do enumerate:

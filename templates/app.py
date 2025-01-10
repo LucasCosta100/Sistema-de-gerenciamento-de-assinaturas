@@ -65,7 +65,7 @@ class UI:
             print (f"[{i.id}]  {i.empresa} - \t{i.valor:.2f} ")
             
         print("___________________________________________________")     
-        print(f"|Seu valor total mensal em assinatura é: {self.subscription_service.total_value()}|")
+        print(f"Seu valor total mensal em assinatura é: {self.subscription_service.total_value()}")
         print("___________________________________________________") 
         
     #def pay_subscription(self):

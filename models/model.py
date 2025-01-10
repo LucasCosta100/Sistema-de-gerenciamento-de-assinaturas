@@ -15,4 +15,5 @@ class Payments(SQLModel, table=True):#tabela criada para saber se a assinatura j
     subscription_id: int = Field(foreign_key="subscription.id")
     subscription: Subscription = Relationship()
     date: date
+    valor: Decimal
     

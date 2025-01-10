@@ -1,7 +1,7 @@
 import __init__
 from models.model import Subscription, Payments
 from models.database import engine
-from sqlmodel import Session, select
+from sqlmodel import Session, select #Session cria uma seção de consulta na tabela e o select seleciona a tabela
 from datetime import date, datetime
 
 class SubscriptionService:
@@ -22,7 +22,7 @@ class SubscriptionService:
     
     def delete(self, id):
         with Session(self.engine) as session:
-            statement = select(Subscription).where(Subscription.id == id) #Não a necessidade do join, pois esta consultando apenas uma tabela
+            statement = select(Subscription).where(Subscription.id == id) #Não a necessidade do join, pois esta consultando apenas 1 tabela
             result = session.exec(statement).one()
             session.delete(result)
             session.commit()
@@ -35,16 +35,16 @@ class SubscriptionService:
     
     def pay(self, subscription: Subscription):
         with Session(self.engine) as session:
-            statement = select(Payments).join(Subscription).where(Subscription.empresa==subscription.empresa) #where é uma clausula de condição 
+            statement = select(Payments).join(Subscription).where(Subscription.empresa==subscription.empresa, Subscription.valor==subscription.valor)  
             results = session.exec(statement).all()                                                           #join serve para fazer uma intersecção entre duas tabelas
-            
+                                                                                                              #where é uma clausula de condição
             if self._has_pay(results):
                 question = input("Essa conta já foi paga esse mês, deseja pagar novamente? Y ou N ")
                 
                 if not question.upper() == 'Y': #Upper serve para deixar as letras em maiusculo
                     return
                 
-            pay = Payments(subscription_id=subscription.id, date=date.today())
+            pay = Payments(subscription_id=subscription.id, valor_pay = subscription.valor, date=date.today())
             session.add(pay)
             session.commit()
     
@@ -112,4 +112,3 @@ x = int(input())
 
 ss.pay(assinaturas[x])
 '''
-

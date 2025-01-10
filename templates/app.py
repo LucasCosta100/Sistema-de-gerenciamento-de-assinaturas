@@ -11,15 +11,18 @@ class UI:
     
     def start(self):
         while True:
-            print('''
-            [1] -> Adicionar assinatura
-            [2] -> Remover assinatura
-            [3] -> Valor total
-            [4] -> Gastos últimos 12 meses
-            [5] -> Status pagamentos
-            [6] -> Sair
-            ''')
-
+            print('''            ==================================
+            |       MENU DE ASSINATURAS      |
+            ==================================
+            |                                |''')
+            print('''            | [1] -> Adicionar assinatura    |
+            | [2] -> Remover assinatura      |
+            | [3] -> Valor total             |
+            | [4] -> Gastos últimos 12 meses |
+            | [5] -> Status pagamentos       |
+            | [6] -> Sair                    |
+            |                                |''')
+            print("            ==================================")
             choice = int(input('Escolha uma opção: '))
 
             if choice == 1:
@@ -39,27 +42,33 @@ class UI:
         empresa = input("Empresa: ")
         site = input("Site: ")
         data_assinatura = datetime.strptime(input("Data de assinatura: "), "%d/%m/%Y")
-        valor: Decimal (input("Valor: "))
+        valor: Decimal = (input("Valor: "))
         subscription = Subscription(empresa=empresa, site=site, data_assinatura=data_assinatura, valor=valor)
         self.subscription_service.create(subscription)
         
-    def delete_subscription(self, empresa):
+    def delete_subscription(self):
         subscriptions = self.subscription_service.list_all()
         #extra: Quando excluir a assinatura, excluir todos os pagamentos dela.
         print("Escolha qual assinatura deseja excluir")
         
         for i in subscriptions:
-            print(f"[{i,id}] -> {i, empresa}")
+            print(f"[{i.id}] -> {i.empresa}")
         
         choice = int(input("Escolha a assinatura: "))
         self.subscription_service.delete(choice)
-        print("Assinatura excluida com secusso")
+        print("Assinatura excluida com secusso!")
 
     def total_value (self):
-        print(f"Seu valor total mensal em assinatura é: {self.subscription_service.total_value()}")
+        subscriptions = self.subscription_service.list_all()
+        print("___________________________________________________") 
+        for i in subscriptions:
+            print (f"[{i.id}]  {i.empresa} - \t{i.valor:.2f} ")
+            
+        print("___________________________________________________")     
+        print(f"|Seu valor total mensal em assinatura é: {self.subscription_service.total_value()}|")
+        print("___________________________________________________") 
         
-    def pay_subscription(self):
+    #def pay_subscription(self):
         
-
-
-UI().start()  
+if __name__ == '__main__':
+    UI().start()  

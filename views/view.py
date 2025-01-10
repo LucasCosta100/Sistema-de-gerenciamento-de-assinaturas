@@ -29,24 +29,25 @@ class SubscriptionService:
     
     def _has_pay(self, results): #Por padrão quando for uma função privada se inicia com um underline
         for result in results:
-            if result.date.month == date.today(). month:
+            if result.date.month == date.today().month:
                 return True
         return False
     
     def pay(self, subscription: Subscription):
         with Session(self.engine) as session:
-            statement = select(Payments).join(Subscription).where(Subscription.empresa==subscription.empresa, Subscription.valor==subscription.valor)  
-            results = session.exec(statement).all()                                                           #join serve para fazer uma intersecção entre duas tabelas
-                                                                                                              #where é uma clausula de condição
+            statement = select(Payments).join(Subscription).where(Subscription.empresa==subscription.empresa)  #join serve para fazer uma intersecção entre duas tabelas
+            results = session.exec(statement).all()                                                            #where é uma clausula de condição
+                                                                                                              
             if self._has_pay(results):
                 question = input("Essa conta já foi paga esse mês, deseja pagar novamente? Y ou N ")
                 
                 if not question.upper() == 'Y': #Upper serve para deixar as letras em maiusculo
                     return
                 
-            pay = Payments(subscription_id=subscription.id, valor_pay = subscription.valor, date=date.today())
+            pay = Payments(subscription_id=subscription.id, date=date.today())
             session.add(pay)
             session.commit()
+            print("Pagamento realizado com o sucesso!")
     
     def total_value(self):
         with Session(self.engine) as session:  

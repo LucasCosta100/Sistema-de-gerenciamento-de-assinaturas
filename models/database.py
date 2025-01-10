@@ -8,3 +8,5 @@ engine = create_engine(sqlite_url, echo=False)
 
 if __name__ == "__main__":
     SQLModel.metadata.create_all(engine)
+
+#"SQLModel.metadata.drop_all(engine)" usado para limpar a tabela, necessario tira o "." do "from .model import *"

@@ -1,8 +1,8 @@
 import __init__
 from views.view import SubscriptionService
 from models.database import engine
-from models.model import Subscription
-from datetime import datetime
+from models.model import Subscription, Payments
+from datetime import datetime, date
 from decimal import Decimal
 
 class UI:
@@ -19,7 +19,7 @@ class UI:
             | [2] -> Remover assinatura      |
             | [3] -> Valor total             |
             | [4] -> Gastos últimos 12 meses |
-            | [5] -> Status pagamentos       |
+            | [5] -> Pagar assinatura       |
             | [6] -> Sair                    |
             |                                |''')
             print("            ==================================")
@@ -68,7 +68,18 @@ class UI:
         print(f"Seu valor total mensal em assinatura é: {self.subscription_service.total_value()}")
         print("___________________________________________________") 
         
-    #def pay_subscription(self):
+    def pay_subscription(self):
+        assinaturas = self.subscription_service.list_all()
+        
+        for i in assinaturas:
+            print(f"{i.empresa} - {i.valor:.2f}")
+        
+        x = (input("Digite o nome da empresa que deseja pagar: "))
+        for n in assinaturas:
+            if n.empresa == x:
+                payments = Subscription(id=n.id, empresa=n.empresa)
+                self.subscription_service.pay(payments)
+        
         
 if __name__ == '__main__':
-    UI().start()  
+    UI().start() 
